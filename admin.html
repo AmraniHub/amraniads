@@ -40,22 +40,20 @@
           <div class="logo-mark sm">AA</div>
           <span>AmraniAds</span>
         </div>
-        <button class="btn-logout" id="logout-btn" title="Log out">⎋</button>
+        <div style="display:flex;gap:0.4rem;align-items:center">
+          <span id="deploy-status" class="deploy-badge warn">⚠ Not configured</span>
+          <button class="btn-icon" id="settings-btn" title="GitHub Deploy Settings">⚙</button>
+          <button class="btn-logout" id="logout-btn" title="Log out">⎋</button>
+        </div>
       </div>
 
       <button class="btn-new-client" id="new-client-btn">+ New Client</button>
 
-      <div class="client-list" id="client-list">
-        <!-- Populated by JS -->
-      </div>
+      <div class="client-list" id="client-list"></div>
 
       <div class="sidebar-footer">
-        <button class="btn-export" id="export-btn">
-          ↓ Export clients.json
-        </button>
-        <button class="btn-sync" id="sync-btn" title="Reload from server">
-          ↺ Sync from server
-        </button>
+        <button class="btn-export" id="export-btn">↓ Export clients.json</button>
+        <button class="btn-sync" id="sync-btn">↺ Sync from server</button>
       </div>
     </aside>
 
@@ -66,7 +64,7 @@
       <div id="empty-state" class="empty-state">
         <div class="empty-icon">📋</div>
         <h2>Select a client or create a new one</h2>
-        <p>Each client gets their own landing page, Meta Pixel, and WhatsApp CTA.</p>
+        <p>Each client gets their own landing page, Meta Pixel, and WhatsApp CTA. Saves auto-deploy to Vercel via GitHub.</p>
         <button class="btn-primary" id="empty-new-btn">+ New Client</button>
       </div>
 
@@ -79,8 +77,8 @@
           </div>
           <div class="form-header-actions">
             <button class="btn-preview" id="preview-btn" style="display:none">↗ Preview</button>
-            <button class="btn-sale" id="sale-btn" style="display:none">💰 Track Sale</button>
-            <button class="btn-delete" id="delete-btn" style="display:none">🗑 Delete</button>
+            <button class="btn-sale"    id="sale-btn"    style="display:none">💰 Track Sale</button>
+            <button class="btn-delete"  id="delete-btn"  style="display:none">🗑 Delete</button>
           </div>
         </div>
 
@@ -116,7 +114,7 @@
               <textarea id="f-bullets" rows="4" placeholder="Free delivery across Morocco&#10;Cash on Delivery available&#10;100% authentic products&#10;Fast shipping 24–48h"></textarea>
             </div>
             <div class="field-group">
-              <label for="f-urgency">Urgency Text <span class="hint">Optional — shown as a red badge</span></label>
+              <label for="f-urgency">Urgency Text <span class="hint">Optional — red badge on page</span></label>
               <input type="text" id="f-urgency" placeholder="e.g. Only 15 pieces left in stock" />
             </div>
           </div>
@@ -143,7 +141,7 @@
             <h3 class="section-title">Meta Pixel</h3>
             <div class="form-row two-col">
               <div class="field-group">
-                <label for="f-pixel-id">Pixel ID * <span class="hint">15–16 digit number from Meta Business</span></label>
+                <label for="f-pixel-id">Pixel ID <span class="hint">15–16 digit number from Meta Business</span></label>
                 <input type="text" id="f-pixel-id" placeholder="e.g. 1234567890123456" />
               </div>
               <div class="field-group">
@@ -154,10 +152,9 @@
             <div class="pixel-info">
               <p>💡 Events fired automatically:</p>
               <ul>
-                <li><strong>PageView</strong> — on page load (after consent)</li>
-                <li><strong>ViewContent</strong> — on page load (after consent)</li>
+                <li><strong>PageView + ViewContent</strong> — on page load after consent</li>
                 <li><strong>Lead</strong> — when visitor clicks the WhatsApp button</li>
-                <li><strong>Purchase</strong> — when you click "Track Sale" in admin</li>
+                <li><strong>Purchase</strong> — when you click "Track Sale" above</li>
               </ul>
             </div>
           </div>
@@ -185,6 +182,46 @@
           <div class="form-actions">
             <button type="button" class="btn-cancel" id="cancel-btn">Cancel</button>
             <button type="submit" class="btn-primary" id="save-btn">Save Client</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Settings panel -->
+      <div id="settings-panel" class="form-panel" style="display:none">
+        <div class="form-header">
+          <div>
+            <h2>GitHub Deploy Settings</h2>
+            <p class="form-url">One-time setup — auto-deploy every time you save a client</p>
+          </div>
+        </div>
+
+        <form id="settings-form">
+          <div class="form-section">
+            <h3 class="section-title">GitHub Repository</h3>
+            <div class="field-group">
+              <label for="s-gh-repo">Repository <span class="hint">owner/repo format</span></label>
+              <input type="text" id="s-gh-repo" placeholder="AmraniHub/amraniads" value="AmraniHub/amraniads" required />
+            </div>
+            <div class="field-group">
+              <label for="s-gh-token">Personal Access Token *
+                <span class="hint">Stored only in your browser — never sent anywhere except GitHub API</span>
+              </label>
+              <input type="password" id="s-gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required autocomplete="off" />
+            </div>
+            <div class="pixel-info">
+              <p>🔑 How to create a GitHub token:</p>
+              <ul>
+                <li>Go to GitHub → Settings → Developer Settings → Personal Access Tokens → Fine-grained tokens</li>
+                <li>Set repository: <strong>AmraniHub/amraniads</strong></li>
+                <li>Permission needed: <strong>Contents — Read and write</strong></li>
+                <li>Copy the token and paste it above</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-preview" id="test-deploy-btn">Test Deploy Now</button>
+            <button type="submit" class="btn-primary">Save Settings</button>
           </div>
         </form>
       </div>

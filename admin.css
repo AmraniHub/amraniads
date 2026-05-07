@@ -150,6 +150,29 @@ body {
 }
 .btn-logout:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
 
+.btn-icon {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #8BA0B5;
+  width: 30px; height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.15s, border-color 0.15s;
+}
+.btn-icon:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
+
+.deploy-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.deploy-badge.ok   { background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.3); }
+.deploy-badge.warn { background: rgba(245,158,11,0.12); color: #F59E0B; border: 1px solid rgba(245,158,11,0.25); }
+
 .btn-new-client {
   margin: 1rem 1rem 0.5rem;
   padding: 0.65rem 1rem;

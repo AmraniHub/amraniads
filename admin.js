@@ -6,13 +6,15 @@
 const ADMIN_PASSWORD  = 'AmraniAds2026';
 const SESSION_KEY     = 'aa_admin_session';
 const DRAFT_KEY       = 'aa_clients_draft';
+const GH_CONFIG_KEY   = 'aa_gh_config';
 const SESSION_HOURS   = 8;
 
 // ── State ─────────────────────────────────────────────────
 
-let clients     = [];
-let activeSlug  = null;
-let isNew       = false;
+let clients      = [];
+let activeSlug   = null;
+let isNew        = false;
+let activePanel  = 'clients'; // 'clients' | 'settings'
 
 // ── Session ───────────────────────────────────────────────
 
@@ -43,6 +45,72 @@ function showScreen(name) {
   document.getElementById('dashboard').style.display    = name === 'dash'  ? 'grid'  : 'none';
 }
 
+// ── GitHub Config ─────────────────────────────────────────
+
+function loadGHConfig() {
+  try { return JSON.parse(localStorage.getItem(GH_CONFIG_KEY)) || {}; }
+  catch { return {}; }
+}
+
+function saveGHConfig(cfg) {
+  localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(cfg));
+}
+
+function ghConfigured() {
+  const cfg = loadGHConfig();
+  return !!(cfg.token && cfg.repo);
+}
+
+// ── GitHub API — auto-deploy ──────────────────────────────
+
+async function deployToGitHub() {
+  const cfg = loadGHConfig();
+  if (!cfg.token || !cfg.repo) {
+    toast('Set up GitHub in Settings first.', 'error');
+    openSettings();
+    return false;
+  }
+
+  const content = JSON.stringify({ clients }, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(content)));
+  const apiBase = `https://api.github.com/repos/${cfg.repo}/contents/clients.json`;
+  const headers = {
+    'Authorization': `token ${cfg.token}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json'
+  };
+
+  // Get current SHA (needed to update existing file)
+  let sha = null;
+  try {
+    const res = await fetch(apiBase, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      sha = data.sha;
+    }
+  } catch {}
+
+  // Commit the file
+  const body = {
+    message: `Update clients.json — ${new Date().toLocaleString('en-GB')}`,
+    content: encoded,
+    ...(sha ? { sha } : {})
+  };
+
+  const res = await fetch(apiBase, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `GitHub API error ${res.status}`);
+  }
+
+  return true;
+}
+
 // ── Data ──────────────────────────────────────────────────
 
 function loadDraft() {
@@ -65,9 +133,7 @@ async function fetchFromServer() {
 }
 
 function slugify(str) {
-  return str
-    .toLowerCase()
-    .trim()
+  return str.toLowerCase().trim()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
@@ -98,16 +164,14 @@ function renderClientList() {
   });
 }
 
-// ── Form ──────────────────────────────────────────────────
+// ── Form helpers ──────────────────────────────────────────
 
 function openNewForm() {
-  isNew       = true;
-  activeSlug  = null;
-  renderClientList();
-  showForm();
-  resetForm();
-  document.getElementById('form-title').textContent = 'New Client';
-  document.getElementById('form-url').textContent   = '';
+  activePanel = 'clients';
+  isNew = true; activeSlug = null;
+  renderClientList(); showForm(); resetForm();
+  document.getElementById('form-title').textContent    = 'New Client';
+  document.getElementById('form-url').textContent      = '';
   document.getElementById('preview-btn').style.display = 'none';
   document.getElementById('sale-btn').style.display    = 'none';
   document.getElementById('delete-btn').style.display  = 'none';
@@ -116,29 +180,36 @@ function openNewForm() {
 function openClient(slug) {
   const c = clients.find(x => x.slug === slug);
   if (!c) return;
-  isNew       = false;
-  activeSlug  = slug;
-  renderClientList();
-  showForm();
-  populateForm(c);
-  document.getElementById('form-title').textContent = c.businessName;
-  document.getElementById('form-url').textContent   = `amraniads.com/c/${c.slug}`;
+  activePanel = 'clients'; isNew = false; activeSlug = slug;
+  renderClientList(); showForm(); populateForm(c);
+  document.getElementById('form-title').textContent    = c.businessName;
+  document.getElementById('form-url').textContent      = `amraniads.com/c/${c.slug}`;
   document.getElementById('preview-btn').style.display = '';
   document.getElementById('sale-btn').style.display    = '';
   document.getElementById('delete-btn').style.display  = '';
 }
 
 function showForm() {
-  document.getElementById('empty-state').style.display      = 'none';
+  document.getElementById('empty-state').style.display       = 'none';
   document.getElementById('client-form-panel').style.display = '';
+  document.getElementById('settings-panel').style.display    = 'none';
 }
 
 function hideForm() {
-  document.getElementById('empty-state').style.display      = '';
+  document.getElementById('empty-state').style.display       = '';
   document.getElementById('client-form-panel').style.display = 'none';
-  activeSlug = null;
-  isNew      = false;
+  document.getElementById('settings-panel').style.display    = 'none';
+  activeSlug = null; isNew = false;
   renderClientList();
+}
+
+function openSettings() {
+  activePanel = 'settings'; activeSlug = null; isNew = false;
+  renderClientList();
+  document.getElementById('empty-state').style.display       = 'none';
+  document.getElementById('client-form-panel').style.display = 'none';
+  document.getElementById('settings-panel').style.display    = '';
+  populateSettings();
 }
 
 function resetForm() {
@@ -168,12 +239,8 @@ function populateForm(c) {
 }
 
 function readForm() {
-  const bulletsRaw = document.getElementById('f-bullets').value;
-  const bullets = bulletsRaw
-    .split('\n')
-    .map(b => b.trim())
-    .filter(Boolean)
-    .slice(0, 4);
+  const bullets = document.getElementById('f-bullets').value
+    .split('\n').map(b => b.trim()).filter(Boolean).slice(0, 4);
 
   return {
     slug:               slugify(document.getElementById('f-slug').value),
@@ -196,21 +263,17 @@ function readForm() {
 
 // ── Save / Delete ─────────────────────────────────────────
 
-function saveClient(e) {
+async function saveClient(e) {
   e.preventDefault();
   const data     = readForm();
   const origSlug = document.getElementById('f-original-slug').value;
 
   if (!data.slug || !data.businessName || !data.headline || !data.whatsapp) {
-    toast('Please fill in all required fields.', 'error');
-    return;
+    toast('Please fill in all required fields.', 'error'); return;
   }
 
-  // Slug collision check (allow same slug when editing same client)
-  const collision = clients.find(c => c.slug === data.slug && c.slug !== origSlug);
-  if (collision) {
-    toast(`Slug "${data.slug}" is already used by another client.`, 'error');
-    return;
+  if (clients.find(c => c.slug === data.slug && c.slug !== origSlug)) {
+    toast(`Slug "${data.slug}" is already used.`, 'error'); return;
   }
 
   if (isNew) {
@@ -221,59 +284,116 @@ function saveClient(e) {
   }
 
   saveDraft(clients);
-  activeSlug = data.slug;
-  isNew      = false;
-
-  renderClientList();
-  populateForm(data);
-  document.getElementById('form-title').textContent = data.businessName;
-  document.getElementById('form-url').textContent   = `amraniads.com/c/${data.slug}`;
-  document.getElementById('f-original-slug').value  = data.slug;
+  activeSlug = data.slug; isNew = false;
+  renderClientList(); populateForm(data);
+  document.getElementById('form-title').textContent    = data.businessName;
+  document.getElementById('form-url').textContent      = `amraniads.com/c/${data.slug}`;
+  document.getElementById('f-original-slug').value     = data.slug;
   document.getElementById('preview-btn').style.display = '';
   document.getElementById('sale-btn').style.display    = '';
   document.getElementById('delete-btn').style.display  = '';
 
-  toast('Client saved. Click "Export clients.json" to deploy.', 'success');
+  if (ghConfigured()) {
+    const btn = document.getElementById('save-btn');
+    btn.textContent = 'Deploying...'; btn.disabled = true;
+    try {
+      await deployToGitHub();
+      toast('Saved & deployed! Live on Vercel in ~30 seconds.', 'success');
+    } catch (err) {
+      toast(`Saved locally. Deploy failed: ${err.message}`, 'error');
+    } finally {
+      btn.textContent = 'Save & Deploy'; btn.disabled = false;
+    }
+  } else {
+    toast('Client saved locally. Configure GitHub in Settings to auto-deploy.', 'success');
+  }
 }
 
 function deleteClient() {
   const c = clients.find(x => x.slug === activeSlug);
-  if (!c) return;
-  if (!confirm(`Delete "${c.businessName}"? This cannot be undone.`)) return;
+  if (!c || !confirm(`Delete "${c.businessName}"? This cannot be undone.`)) return;
 
   clients = clients.filter(x => x.slug !== activeSlug);
   saveDraft(clients);
-  hideForm();
-  renderClientList();
-  toast(`"${c.businessName}" deleted.`, 'success');
+  hideForm(); renderClientList();
+
+  if (ghConfigured()) {
+    deployToGitHub()
+      .then(() => toast(`"${c.businessName}" deleted & deployed.`, 'success'))
+      .catch(() => toast(`Deleted locally. Manual deploy needed.`, 'error'));
+  } else {
+    toast(`"${c.businessName}" deleted.`, 'success');
+  }
 }
 
-// ── Export ────────────────────────────────────────────────
+// ── Settings ──────────────────────────────────────────────
+
+function populateSettings() {
+  const cfg = loadGHConfig();
+  document.getElementById('s-gh-repo').value  = cfg.repo  || 'AmraniHub/amraniads';
+  document.getElementById('s-gh-token').value = cfg.token || '';
+  updateDeployBadge();
+}
+
+function updateDeployBadge() {
+  const badge  = document.getElementById('deploy-status');
+  const saveBtn = document.getElementById('save-btn');
+  if (!badge) return;
+  if (ghConfigured()) {
+    badge.textContent = '✓ Auto-deploy active';
+    badge.className   = 'deploy-badge ok';
+    if (saveBtn) saveBtn.textContent = 'Save & Deploy';
+  } else {
+    badge.textContent = '⚠ Not configured';
+    badge.className   = 'deploy-badge warn';
+    if (saveBtn) saveBtn.textContent = 'Save Client';
+  }
+}
+
+function saveSettings(e) {
+  e.preventDefault();
+  const token = document.getElementById('s-gh-token').value.trim();
+  const repo  = document.getElementById('s-gh-repo').value.trim();
+  if (!token || !repo) { toast('Enter both repo and token.', 'error'); return; }
+  saveGHConfig({ token, repo });
+  updateDeployBadge();
+  toast('GitHub settings saved — auto-deploy is active!', 'success');
+}
+
+async function testDeploy() {
+  const btn = document.getElementById('test-deploy-btn');
+  btn.textContent = 'Testing...'; btn.disabled = true;
+  try {
+    await deployToGitHub();
+    toast('Test deploy succeeded! Check Vercel — live in ~30s.', 'success');
+  } catch (err) {
+    toast(`Deploy failed: ${err.message}`, 'error');
+  } finally {
+    btn.textContent = 'Test Deploy Now'; btn.disabled = false;
+  }
+}
+
+// ── Export fallback ───────────────────────────────────────
 
 function exportJSON() {
-  const data = JSON.stringify({ clients }, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ clients }, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'clients.json';
-  a.click();
+  a.href = url; a.download = 'clients.json'; a.click();
   URL.revokeObjectURL(url);
-  toast('clients.json downloaded. Add to your project and deploy.', 'success');
+  toast('clients.json downloaded.', 'success');
 }
 
 // ── Preview & Track Sale ──────────────────────────────────
 
 function previewClient() {
-  if (!activeSlug) return;
-  window.open(`/c/${activeSlug}`, '_blank', 'noopener');
+  if (activeSlug) window.open(`/c/${activeSlug}`, '_blank', 'noopener');
 }
 
 function trackSale() {
   if (!activeSlug) return;
-  const url = `/c/${activeSlug}?purchase=1`;
-  window.open(url, '_blank', 'noopener');
-  toast('Purchase event fired on the client page.', 'success');
+  window.open(`/c/${activeSlug}?purchase=1`, '_blank', 'noopener');
+  toast('Purchase event fired on client page.', 'success');
 }
 
 // ── Toast ─────────────────────────────────────────────────
@@ -284,47 +404,33 @@ function toast(msg, type = 'success') {
   el.textContent = msg;
   el.className   = `toast show ${type}`;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.className = 'toast'; }, 3500);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, 4500);
 }
 
 // ── Utilities ─────────────────────────────────────────────
 
 function escHtml(str) {
-  return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
-// ── Color picker sync ─────────────────────────────────────
 
 function syncColorPicker() {
   const picker = document.getElementById('f-color');
   const text   = document.getElementById('f-color-text');
-
   picker.addEventListener('input', () => { text.value = picker.value; });
   text.addEventListener('input', () => {
-    const val = text.value.trim();
-    if (/^#[0-9A-Fa-f]{6}$/.test(val)) picker.value = val;
+    if (/^#[0-9A-Fa-f]{6}$/.test(text.value.trim())) picker.value = text.value.trim();
   });
 }
-
-// ── Slug auto-generate ────────────────────────────────────
 
 function syncSlug() {
   const nameInput = document.getElementById('f-business-name');
   const slugInput = document.getElementById('f-slug');
-  let manualSlug  = false;
-
+  let manual = false;
   nameInput.addEventListener('input', () => {
-    if (!manualSlug || !slugInput.value) {
-      slugInput.value = slugify(nameInput.value);
-    }
+    if (!manual || !slugInput.value) slugInput.value = slugify(nameInput.value);
   });
-
   slugInput.addEventListener('input', () => {
-    manualSlug = slugInput.value.length > 0;
+    manual = slugInput.value.length > 0;
     slugInput.value = slugify(slugInput.value);
   });
 }
@@ -332,41 +438,26 @@ function syncSlug() {
 // ── Init ──────────────────────────────────────────────────
 
 async function initDashboard() {
-  // Try loading draft first, then server
+  updateDeployBadge();
   const draft = loadDraft();
-
   if (draft) {
-    clients = draft;
-    renderClientList();
-    toast('Loaded from local draft. Export to deploy changes.', 'success');
+    clients = draft; renderClientList();
   } else {
-    try {
-      clients = await fetchFromServer();
-      renderClientList();
-    } catch {
-      clients = [];
-      renderClientList();
-      toast('Could not load clients.json from server. Starting fresh.', 'error');
-    }
+    try { clients = await fetchFromServer(); renderClientList(); }
+    catch { clients = []; renderClientList(); }
   }
 }
 
 async function init() {
-  if (isLoggedIn()) {
-    showScreen('dash');
-    await initDashboard();
-  } else {
-    showScreen('login');
-  }
+  if (isLoggedIn()) { showScreen('dash'); await initDashboard(); }
+  else { showScreen('login'); }
 
-  // Login form
   document.getElementById('login-form').addEventListener('submit', e => {
     e.preventDefault();
     const pw = document.getElementById('password-input').value;
     if (login(pw)) {
       document.getElementById('login-error').style.display = 'none';
-      showScreen('dash');
-      initDashboard();
+      showScreen('dash'); initDashboard();
     } else {
       document.getElementById('login-error').style.display = 'block';
       document.getElementById('password-input').value = '';
@@ -374,10 +465,10 @@ async function init() {
     }
   });
 
-  // Dashboard buttons
   document.getElementById('logout-btn').addEventListener('click', logout);
   document.getElementById('new-client-btn').addEventListener('click', openNewForm);
   document.getElementById('empty-new-btn').addEventListener('click', openNewForm);
+  document.getElementById('settings-btn').addEventListener('click', openSettings);
   document.getElementById('export-btn').addEventListener('click', exportJSON);
   document.getElementById('preview-btn').addEventListener('click', previewClient);
   document.getElementById('sale-btn').addEventListener('click', trackSale);
@@ -386,17 +477,15 @@ async function init() {
 
   document.getElementById('sync-btn').addEventListener('click', async () => {
     try {
-      clients = await fetchFromServer();
-      saveDraft(clients);
-      renderClientList();
-      hideForm();
+      clients = await fetchFromServer(); saveDraft(clients);
+      renderClientList(); hideForm();
       toast('Synced from server.', 'success');
-    } catch {
-      toast('Could not sync from server.', 'error');
-    }
+    } catch { toast('Could not sync from server.', 'error'); }
   });
 
   document.getElementById('client-form').addEventListener('submit', saveClient);
+  document.getElementById('settings-form').addEventListener('submit', saveSettings);
+  document.getElementById('test-deploy-btn').addEventListener('click', testDeploy);
 
   syncColorPicker();
   syncSlug();
