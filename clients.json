@@ -55,6 +55,23 @@
       "primaryColor": "#E87722",
       "active": true,
       "createdAt": "2026-05-07"
+    },
+    {
+      "slug": "excellence-agency",
+      "businessName": "excellence agency",
+      "headline": "excellence agency",
+      "subheadline": "excellence agency",
+      "bullets": [],
+      "urgency": "",
+      "whatsapp": "+212660095616",
+      "whatsappButtonText": "Order Via WhatsApp",
+      "whatsappMessage": "Salam",
+      "pixelId": "989617117078285",
+      "price": 0,
+      "currency": "MAD",
+      "primaryColor": "#E87722",
+      "active": true,
+      "createdAt": "2026-05-07"
     }
   ]
 }
