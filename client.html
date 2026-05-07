@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Loading...</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/client.css" />
+</head>
+<body>
+
+  <!-- Loading state (shown until JS renders the page) -->
+  <div id="loading" class="loading-screen">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading...</p>
+  </div>
+
+  <!-- Page root (hidden until JS renders) -->
+  <div id="page-root" style="display:none"></div>
+
+  <!-- Cookie consent banner -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent">
+    <p class="cookie-text">
+      We use cookies and Meta Pixel to improve ad performance and measure results.
+      <a href="#privacy" id="privacy-link">Privacy policy</a>.
+    </p>
+    <div class="cookie-actions">
+      <button id="consent-decline" class="btn-decline">Decline</button>
+      <button id="consent-accept" class="btn-accept">Accept</button>
+    </div>
+  </div>
+
+  <!-- Privacy modal (hidden) -->
+  <div id="privacy-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+      <h2>Privacy Policy</h2>
+      <p>This page uses Meta Pixel to track ad performance on behalf of the business owner. When you accept cookies, anonymous data about your visit (such as page views and button clicks) is sent to Meta (Facebook) to help measure and optimize advertising campaigns.</p>
+      <p>We do not collect or store your personal data on our servers. No information is sold to third parties.</p>
+      <p>You can decline cookies and the page will still work normally — only tracking will be disabled.</p>
+      <p style="margin-top:1rem;font-size:0.8rem;opacity:0.6">Powered by AmraniAds</p>
+    </div>
+  </div>
+
+  <script src="/client.js"></script>
+</body>
+</html>

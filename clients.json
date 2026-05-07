@@ -1,0 +1,26 @@
+{
+  "clients": [
+    {
+      "slug": "demo-client",
+      "businessName": "Demo Business",
+      "headline": "Get Your Special Offer Today",
+      "subheadline": "Limited time — Don't miss out",
+      "bullets": [
+        "Free delivery across Morocco",
+        "Cash on Delivery available",
+        "100% authentic products",
+        "Fast shipping — 24 to 48 hours"
+      ],
+      "urgency": "Only 20 pieces left in stock",
+      "whatsapp": "+212600000000",
+      "whatsappMessage": "Hello! I saw your ad and I'm interested in your offer. Please send me more details.",
+      "whatsappButtonText": "Order via WhatsApp",
+      "pixelId": "YOUR_PIXEL_ID_HERE",
+      "price": 299,
+      "currency": "MAD",
+      "primaryColor": "#E87722",
+      "active": false,
+      "createdAt": "2026-05-07"
+    }
+  ]
+}

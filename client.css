@@ -1,0 +1,402 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0D1B2A;
+  --card: #152232;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #E8EDF3;
+  --text-muted: #7A93AB;
+  --accent: var(--client-color, #E87722);
+  --wa: #25D366;
+  --wa-dark: #1EA952;
+  --radius: 14px;
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Loading ─────────────────────────────────────────── */
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 100vh;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(255,255,255,0.08);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text { font-size: 0.85rem; color: var(--text-muted); }
+
+/* ─── Not Found / Error ───────────────────────────────── */
+.state-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+.state-screen h1 { font-size: 1.5rem; color: var(--accent); }
+.state-screen p  { color: var(--text-muted); font-size: 0.95rem; }
+.state-screen a  { color: var(--text-muted); text-decoration: underline; font-size: 0.9rem; }
+
+/* ─── Page layout ─────────────────────────────────────── */
+.client-page {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 140px;
+}
+
+/* ─── Top bar ─────────────────────────────────────────── */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.powered-tag {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* ─── Hero ────────────────────────────────────────────── */
+.hero {
+  padding: 2.5rem 1.5rem 2rem;
+  text-align: center;
+}
+
+.business-name {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
+}
+
+.headline {
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #fff;
+  margin-bottom: 0.85rem;
+  letter-spacing: -0.02em;
+}
+
+.headline span { color: var(--accent); }
+
+.subheadline {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 340px;
+  margin: 0 auto 2rem;
+}
+
+/* ─── Bullets ─────────────────────────────────────────── */
+.bullets-wrap {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.bullets {
+  list-style: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.bullets li {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.95rem;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+.bullets li:last-child { border-bottom: none; }
+
+.bullet-icon {
+  width: 22px; height: 22px;
+  background: rgba(37, 211, 102, 0.12);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: var(--wa);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* ─── Urgency badge ───────────────────────────────────── */
+.urgency-wrap {
+  padding: 0 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.urgency-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.urgency-dot {
+  width: 7px; height: 7px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ─── Social proof strip ──────────────────────────────── */
+.trust-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0 1.5rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.trust-item .icon { font-size: 1rem; }
+
+/* ─── WhatsApp CTA (sticky) ───────────────────────────── */
+.wa-sticky {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  background: linear-gradient(to top, var(--bg) 65%, transparent);
+  padding: 1.25rem 1.5rem 1rem;
+  max-width: 520px;
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.wa-sticky > * { pointer-events: auto; }
+
+.wa-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: var(--wa);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 24px rgba(37, 211, 102, 0.28);
+  letter-spacing: -0.01em;
+}
+
+.wa-btn:hover  { background: var(--wa-dark); box-shadow: 0 6px 30px rgba(37, 211, 102, 0.38); }
+.wa-btn:active { transform: scale(0.98); }
+
+.wa-btn svg { flex-shrink: 0; }
+
+.wa-subtext {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+/* ─── Cookie banner ───────────────────────────────────── */
+.cookie-banner {
+  position: fixed;
+  bottom: 110px;
+  left: 1rem; right: 1rem;
+  background: #1b2f45;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  z-index: 200;
+  display: none;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.cookie-text {
+  flex: 1;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  min-width: 160px;
+  line-height: 1.5;
+}
+.cookie-text a { color: var(--accent); text-decoration: none; }
+.cookie-text a:hover { text-decoration: underline; }
+
+.cookie-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+.btn-accept {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.15s;
+}
+.btn-accept:hover { opacity: 0.9; }
+
+.btn-decline {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: color 0.15s;
+}
+.btn-decline:hover { color: var(--text); }
+
+/* ─── Privacy modal ───────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  max-width: 420px;
+  width: 100%;
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-box h2 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+
+.modal-box p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 0.75rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--text); }
+
+/* ─── Footer ──────────────────────────────────────────── */
+.client-footer {
+  text-align: center;
+  padding: 1.5rem 1.5rem 0.5rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.client-footer a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* ─── Responsive ──────────────────────────────────────── */
+@media (min-width: 521px) {
+  .wa-sticky {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+  }
+
+  .cookie-banner {
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+  }
+}

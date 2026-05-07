@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AmraniAds — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body>
+
+  <!-- ── Login Screen ─────────────────────────────────── -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-mark">AA</div>
+        <span>AmraniAds Admin</span>
+      </div>
+      <form id="login-form">
+        <div class="field-group">
+          <label for="password-input">Password</label>
+          <input type="password" id="password-input" placeholder="Enter admin password" autocomplete="current-password" />
+        </div>
+        <div id="login-error" class="login-error" style="display:none">Incorrect password</div>
+        <button type="submit" class="btn-primary full-width">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Dashboard ────────────────────────────────────── -->
+  <div id="dashboard" class="dashboard" style="display:none">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-mark sm">AA</div>
+          <span>AmraniAds</span>
+        </div>
+        <button class="btn-logout" id="logout-btn" title="Log out">⎋</button>
+      </div>
+
+      <button class="btn-new-client" id="new-client-btn">+ New Client</button>
+
+      <div class="client-list" id="client-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-export" id="export-btn">
+          ↓ Export clients.json
+        </button>
+        <button class="btn-sync" id="sync-btn" title="Reload from server">
+          ↺ Sync from server
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main panel -->
+    <main class="main-panel">
+
+      <!-- Empty state -->
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h2>Select a client or create a new one</h2>
+        <p>Each client gets their own landing page, Meta Pixel, and WhatsApp CTA.</p>
+        <button class="btn-primary" id="empty-new-btn">+ New Client</button>
+      </div>
+
+      <!-- Client form -->
+      <div id="client-form-panel" class="form-panel" style="display:none">
+        <div class="form-header">
+          <div>
+            <h2 id="form-title">New Client</h2>
+            <p id="form-url" class="form-url"></p>
+          </div>
+          <div class="form-header-actions">
+            <button class="btn-preview" id="preview-btn" style="display:none">↗ Preview</button>
+            <button class="btn-sale" id="sale-btn" style="display:none">💰 Track Sale</button>
+            <button class="btn-delete" id="delete-btn" style="display:none">🗑 Delete</button>
+          </div>
+        </div>
+
+        <form id="client-form">
+          <input type="hidden" id="f-original-slug" />
+
+          <div class="form-section">
+            <h3 class="section-title">Business Info</h3>
+            <div class="form-row two-col">
+              <div class="field-group">
+                <label for="f-business-name">Business Name *</label>
+                <input type="text" id="f-business-name" placeholder="e.g. Fatima Beauty" required />
+              </div>
+              <div class="field-group">
+                <label for="f-slug">Page Slug * <span class="hint">URL path — no spaces</span></label>
+                <input type="text" id="f-slug" placeholder="e.g. fatima-beauty" required pattern="[a-z0-9\-]+" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Offer Copy</h3>
+            <div class="field-group">
+              <label for="f-headline">Headline * <span class="hint">Big, bold offer text</span></label>
+              <input type="text" id="f-headline" placeholder="e.g. Get 30% Off Your First Order" required />
+            </div>
+            <div class="field-group">
+              <label for="f-subheadline">Subheadline <span class="hint">Supporting urgency line</span></label>
+              <input type="text" id="f-subheadline" placeholder="e.g. Limited time — Only for today" />
+            </div>
+            <div class="field-group">
+              <label for="f-bullets">Bullet Points <span class="hint">One per line, max 4</span></label>
+              <textarea id="f-bullets" rows="4" placeholder="Free delivery across Morocco&#10;Cash on Delivery available&#10;100% authentic products&#10;Fast shipping 24–48h"></textarea>
+            </div>
+            <div class="field-group">
+              <label for="f-urgency">Urgency Text <span class="hint">Optional — shown as a red badge</span></label>
+              <input type="text" id="f-urgency" placeholder="e.g. Only 15 pieces left in stock" />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">WhatsApp</h3>
+            <div class="form-row two-col">
+              <div class="field-group">
+                <label for="f-whatsapp">WhatsApp Number * <span class="hint">With country code</span></label>
+                <input type="tel" id="f-whatsapp" placeholder="+212600000000" required />
+              </div>
+              <div class="field-group">
+                <label for="f-wa-btn-text">Button Text</label>
+                <input type="text" id="f-wa-btn-text" placeholder="Order via WhatsApp" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="f-wa-message">Pre-filled WhatsApp Message</label>
+              <textarea id="f-wa-message" rows="2" placeholder="Hello! I saw your ad and I'm interested in your offer. Please send me more details."></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Meta Pixel</h3>
+            <div class="form-row two-col">
+              <div class="field-group">
+                <label for="f-pixel-id">Pixel ID * <span class="hint">15–16 digit number from Meta Business</span></label>
+                <input type="text" id="f-pixel-id" placeholder="e.g. 1234567890123456" />
+              </div>
+              <div class="field-group">
+                <label for="f-price">Product Price <span class="hint">For Purchase event value (MAD)</span></label>
+                <input type="number" id="f-price" placeholder="e.g. 299" min="0" step="1" />
+              </div>
+            </div>
+            <div class="pixel-info">
+              <p>💡 Events fired automatically:</p>
+              <ul>
+                <li><strong>PageView</strong> — on page load (after consent)</li>
+                <li><strong>ViewContent</strong> — on page load (after consent)</li>
+                <li><strong>Lead</strong> — when visitor clicks the WhatsApp button</li>
+                <li><strong>Purchase</strong> — when you click "Track Sale" in admin</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Settings</h3>
+            <div class="form-row two-col">
+              <div class="field-group">
+                <label for="f-color">Accent Color</label>
+                <div class="color-row">
+                  <input type="color" id="f-color" value="#E87722" />
+                  <input type="text" id="f-color-text" placeholder="#E87722" maxlength="7" />
+                </div>
+              </div>
+              <div class="field-group">
+                <label for="f-active">Status</label>
+                <div class="toggle-row">
+                  <input type="checkbox" id="f-active" role="switch" />
+                  <label for="f-active" class="toggle-label">Active (page is live)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" id="cancel-btn">Cancel</button>
+            <button type="submit" class="btn-primary" id="save-btn">Save Client</button>
+          </div>
+        </form>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>
