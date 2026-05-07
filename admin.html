@@ -40,11 +40,7 @@
           <div class="logo-mark sm">AA</div>
           <span>AmraniAds</span>
         </div>
-        <div style="display:flex;gap:0.4rem;align-items:center">
-          <span id="deploy-status" class="deploy-badge warn">⚠ Not configured</span>
-          <button class="btn-icon" id="settings-btn" title="GitHub Deploy Settings">⚙</button>
-          <button class="btn-logout" id="logout-btn" title="Log out">⎋</button>
-        </div>
+        <button class="btn-logout" id="logout-btn" title="Log out">⎋</button>
       </div>
 
       <button class="btn-new-client" id="new-client-btn">+ New Client</button>
@@ -52,6 +48,10 @@
       <div class="client-list" id="client-list"></div>
 
       <div class="sidebar-footer">
+        <button class="btn-settings" id="settings-btn">
+          ⚙ GitHub Deploy
+          <span id="deploy-status" class="deploy-badge warn">Not configured</span>
+        </button>
         <button class="btn-export" id="export-btn">↓ Export clients.json</button>
         <button class="btn-sync" id="sync-btn">↺ Sync from server</button>
       </div>
