@@ -38,6 +38,23 @@
       "primaryColor": "#E87722",
       "active": true,
       "createdAt": "2026-05-07"
+    },
+    {
+      "slug": "salimacosmetics",
+      "businessName": "SalimaCosmetics",
+      "headline": "SalimaCosmetics",
+      "subheadline": "SalimaCosmetics",
+      "bullets": [],
+      "urgency": "",
+      "whatsapp": "+212713196151",
+      "whatsappButtonText": "Order Via WhatsApp",
+      "whatsappMessage": "Salam",
+      "pixelId": "930801276451588",
+      "price": 0,
+      "currency": "MAD",
+      "primaryColor": "#E87722",
+      "active": true,
+      "createdAt": "2026-05-07"
     }
   ]
 }
