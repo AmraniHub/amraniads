@@ -271,43 +271,29 @@ const ClientPage = (() => {
     const pixelId = client.pixelId;
 
     if (pixelId && pixelId !== 'YOUR_PIXEL_ID_HERE') {
-      // Bootstrap fbq inline — events queue immediately even before script loads
-      /* eslint-disable */
-      !function(f,b,e,v,n,t,s){
-        if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)
-      }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-      /* eslint-enable */
+      // sendBeacon fires the request and survives page navigation — no waiting needed.
+      // Facebook's noscript pixel endpoint accepts the same parameters.
+      const fireBeacon = (ev, extra) => {
+        const p = new URLSearchParams({ id: pixelId, ev, noscript: '1', ...extra });
+        const url = `https://www.facebook.com/tr?${p.toString()}`;
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(url);
+        } else {
+          new Image().src = url; // fallback for very old browsers
+        }
+      };
 
-      fbq('init', pixelId);
-      fbq('track', 'PageView');
-      fbq('track', 'ViewContent', {
-        content_name: client.headline,
-        content_category: client.businessName,
-        currency: client.currency || 'MAD',
-        value: client.price || 0,
-        ...utmParams
+      fireBeacon('PageView');
+      fireBeacon('Lead', {
+        'cd[content_name]':     client.businessName,
+        'cd[content_category]': 'WhatsApp Group Click',
+        'cd[currency]':         client.currency || 'MAD',
+        'cd[value]':            String(client.price || 0),
       });
-      // Lead fires last — this is the conversion event Meta optimises toward
-      fbq('track', 'Lead', {
-        content_name: client.businessName,
-        content_category: 'WhatsApp Group Click',
-        currency: client.currency || 'MAD',
-        value: client.price || 0,
-        ...utmParams
-      });
-
-      // Wait 1500ms: enough for fbevents.js to load from CDN + transmit all events
-      // before the page navigates away. Fallback button above covers any extra wait.
-      setTimeout(() => { window.location.href = groupUrl; }, 1500);
-    } else {
-      // No pixel configured — redirect immediately
-      setTimeout(() => { window.location.href = groupUrl; }, 400);
     }
+
+    // 200ms — just enough for a smooth visual, pixel is already in-flight via beacon
+    setTimeout(() => { window.location.href = groupUrl; }, 200);
   }
 
   // ── Privacy modal ─────────────────────────────────────────
