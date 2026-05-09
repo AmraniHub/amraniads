@@ -49,12 +49,14 @@
       "whatsapp": "+212713196151",
       "whatsappButtonText": "Order Via WhatsApp",
       "whatsappMessage": "Salam",
+      "whatsappGroup": "https://chat.whatsapp.com/HsFyX9HlXFFKqDiKKDjZdc",
+      "directGroupRedirect": true,
       "pixelId": "930801276451588",
       "price": 0,
       "currency": "MAD",
       "primaryColor": "#E87722",
       "active": true,
-      "createdAt": "2026-05-07"
+      "createdAt": "2026-05-09"
     },
     {
       "slug": "excellence-agency",
