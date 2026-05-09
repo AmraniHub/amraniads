@@ -272,7 +272,21 @@ const ClientPage = (() => {
     }
 
     setTimeout(() => {
-      window.location.replace(client.whatsappGroup);
+      const groupUrl = client.whatsappGroup;
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const isIOS     = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      if (isAndroid) {
+        // Intent URL opens WhatsApp app directly, bypassing the web preview
+        const path = groupUrl.replace(/^https?:\/\//, '');
+        window.location.replace(`intent://${path}#Intent;scheme=https;package=com.whatsapp;fallbackUrl=${encodeURIComponent(groupUrl)};end`);
+      } else if (isIOS) {
+        // Universal links: open in app if installed, fall back to web
+        window.location.replace(groupUrl);
+      } else {
+        // Desktop — web preview is unavoidable
+        window.location.replace(groupUrl);
+      }
     }, 500);
   }
 
