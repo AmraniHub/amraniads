@@ -268,9 +268,31 @@ const ClientPage = (() => {
       </div>
     `;
 
-    initPixel();
+    const pixelId = client.pixelId;
 
-    if (window.fbq && pixelReady) {
+    if (pixelId && pixelId !== 'YOUR_PIXEL_ID_HERE') {
+      // Bootstrap fbq inline — events queue immediately even before script loads
+      /* eslint-disable */
+      !function(f,b,e,v,n,t,s){
+        if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)
+      }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      /* eslint-enable */
+
+      fbq('init', pixelId);
+      fbq('track', 'PageView');
+      fbq('track', 'ViewContent', {
+        content_name: client.headline,
+        content_category: client.businessName,
+        currency: client.currency || 'MAD',
+        value: client.price || 0,
+        ...utmParams
+      });
+      // Lead fires last — this is the conversion event Meta optimises toward
       fbq('track', 'Lead', {
         content_name: client.businessName,
         content_category: 'WhatsApp Group Click',
@@ -278,10 +300,14 @@ const ClientPage = (() => {
         value: client.price || 0,
         ...utmParams
       });
-    }
 
-    // Plain URL — WhatsApp universal links open the app automatically on iOS & Android
-    setTimeout(() => { window.location.href = groupUrl; }, 400);
+      // Wait 1500ms: enough for fbevents.js to load from CDN + transmit all events
+      // before the page navigates away. Fallback button above covers any extra wait.
+      setTimeout(() => { window.location.href = groupUrl; }, 1500);
+    } else {
+      // No pixel configured — redirect immediately
+      setTimeout(() => { window.location.href = groupUrl; }, 400);
+    }
   }
 
   // ── Privacy modal ─────────────────────────────────────────
