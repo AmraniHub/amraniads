@@ -231,6 +231,8 @@ function populateForm(c) {
   document.getElementById('f-whatsapp').value        = c.whatsapp || '';
   document.getElementById('f-wa-btn-text').value     = c.whatsappButtonText || '';
   document.getElementById('f-wa-message').value      = c.whatsappMessage || '';
+  document.getElementById('f-wa-group').value        = c.whatsappGroup || '';
+  document.getElementById('f-direct-redirect').checked = c.directGroupRedirect === true;
   document.getElementById('f-pixel-id').value        = c.pixelId || '';
   document.getElementById('f-price').value           = c.price || '';
   document.getElementById('f-color').value           = c.primaryColor || '#E87722';
@@ -252,6 +254,8 @@ function readForm() {
     whatsapp:           document.getElementById('f-whatsapp').value.trim(),
     whatsappButtonText: document.getElementById('f-wa-btn-text').value.trim(),
     whatsappMessage:    document.getElementById('f-wa-message').value.trim(),
+    whatsappGroup:      document.getElementById('f-wa-group').value.trim(),
+    directGroupRedirect: document.getElementById('f-direct-redirect').checked,
     pixelId:            document.getElementById('f-pixel-id').value.trim(),
     price:              Number(document.getElementById('f-price').value) || 0,
     currency:           'MAD',

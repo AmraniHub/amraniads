@@ -135,6 +135,18 @@
               <label for="f-wa-message">Pre-filled WhatsApp Message</label>
               <textarea id="f-wa-message" rows="2" placeholder="Hello! I saw your ad and I'm interested in your offer. Please send me more details."></textarea>
             </div>
+            <div class="field-group">
+              <label for="f-wa-group">WhatsApp Group Link <span class="hint">Optional — adds a "Join Group" button on the page</span></label>
+              <input type="url" id="f-wa-group" placeholder="https://chat.whatsapp.com/..." />
+            </div>
+            <div class="field-group">
+              <label for="f-direct-redirect">Direct Redirect Mode</label>
+              <div class="toggle-row">
+                <input type="checkbox" id="f-direct-redirect" role="switch" />
+                <label for="f-direct-redirect" class="toggle-label">Skip landing page — send visitors straight to the WhatsApp group</label>
+              </div>
+              <p class="field-hint-text">When ON: the pixel fires silently then the user is instantly redirected. Requires the group link above.</p>
+            </div>
           </div>
 
           <div class="form-section">

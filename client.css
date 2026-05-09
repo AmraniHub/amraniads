@@ -217,6 +217,34 @@ body {
 
 .trust-item .icon { font-size: 1rem; }
 
+/* ─── WhatsApp Group CTA ──────────────────────────────── */
+.wa-group-wrap {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.wa-group-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: var(--wa);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 24px rgba(37, 211, 102, 0.28);
+  letter-spacing: -0.01em;
+}
+
+.wa-group-btn:hover  { background: var(--wa-dark); box-shadow: 0 6px 30px rgba(37, 211, 102, 0.38); }
+.wa-group-btn:active { transform: scale(0.98); }
+.wa-group-btn svg    { flex-shrink: 0; }
+
 /* ─── WhatsApp CTA (sticky) ───────────────────────────── */
 .wa-sticky {
   position: fixed;

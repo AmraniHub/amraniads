@@ -449,6 +449,14 @@ body {
   margin-left: 0.3rem;
 }
 
+.field-hint-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
 .field-group input,
 .field-group textarea,
 .field-group select {
