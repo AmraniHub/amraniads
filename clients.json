@@ -34,12 +34,14 @@
       "whatsapp": "+212635829106",
       "whatsappButtonText": "Order Via Whatsapp",
       "whatsappMessage": "Salam",
+      "whatsappGroup": "",
+      "directGroupRedirect": false,
       "pixelId": "1752222792606707",
       "price": 0,
       "currency": "MAD",
       "primaryColor": "#E87722",
-      "active": true,
-      "createdAt": "2026-05-07"
+      "active": false,
+      "createdAt": "2026-05-15"
     },
     {
       "slug": "salimacosmetics",
