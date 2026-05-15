@@ -13,14 +13,16 @@
       ],
       "urgency": "Only 20 pieces left in stock",
       "whatsapp": "+212600000000",
-      "whatsappMessage": "Hello! I saw your ad and I'm interested in your offer. Please send me more details.",
       "whatsappButtonText": "Order via WhatsApp",
+      "whatsappMessage": "Hello! I saw your ad and I'm interested in your offer. Please send me more details.",
+      "whatsappGroup": "",
+      "directGroupRedirect": false,
       "pixelId": "YOUR_PIXEL_ID_HERE",
       "price": 299,
       "currency": "MAD",
       "primaryColor": "#E87722",
       "active": false,
-      "createdAt": "2026-05-07"
+      "createdAt": "2026-05-15"
     },
     {
       "slug": "elite-shop",
